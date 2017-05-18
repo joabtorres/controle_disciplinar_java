@@ -1,12 +1,67 @@
+//******************************************************
+//Instituto Federal de São Paulo - Campus Sertãozinho
+//Disciplina......: M3LPBD
+//Programação de Computadores e Dispositivos Móveis
+//Aluno...........: JOAB TORRES ALENCAR
+//******************************************************
 package view;
 
-public class ViewCadastrar extends javax.swing.JFrame {
+import model.bean.Disciplina;
+import javax.swing.JOptionPane;
+import model.dao.DisciplinaModel;
 
-    /**
-     * Creates new form ViewCadastrar
-     */
-    public ViewCadastrar() {
+public class ViewFormDisciplina extends javax.swing.JFrame {
+
+    //OBJETIVO: Esta variavel vai armazena codigo do usuario;
+    private int cod;
+
+    //OBJETIVO: método construtor padrão da view para inicialização dos componentes
+    public ViewFormDisciplina() {
         initComponents();
+    }
+
+    //OBJETIVO: Quando for chamada uma instância da ViewFormDisciplina se passa o parametro referente instância disciplina será carregado os dados na view;
+    public ViewFormDisciplina(Disciplina disciplina) {
+        initComponents();
+        this.cod = disciplina.getCod();
+        jTextNome.setText(disciplina.getNome());
+        jTextCH.setText(disciplina.getCarga_horaria());
+        jTextCurso.setText(disciplina.getCurso());
+        jTextVagas.setText(Integer.toString(disciplina.getVagas()));
+        jComboPeriodo.setSelectedItem(disciplina.getPeriodo());
+    }
+    
+    //OBJETIVO: este método tem como objetivo checa se todos os campos do cadastro foram preenchidos e caso estiverem preenchidos será feito a inserção ou alteração
+    private void salvar() {
+        if (!(jTextNome.getText()).equals("") && !(jTextCH.getText()).equals("") && !(jTextCurso.getText()).equals("") && !(jTextVagas.getText()).equals("")) {
+            Disciplina disciplina = new Disciplina();
+            disciplina.setNome(jTextNome.getText());
+            disciplina.setCarga_horaria(jTextCH.getText());
+            disciplina.setCurso(jTextCurso.getText());
+            disciplina.setVagas(Integer.parseInt(jTextVagas.getText()));
+            disciplina.setPeriodo(jComboPeriodo.getSelectedItem().toString());
+            DisciplinaModel disciplinaModel = DisciplinaModel.getInstance();
+            //OBJETIVO: verifica se a variavel cod é maior que zero, isso significa que se ela for diferente de zero então ela é chama o método update da classe DisciplinaModel, caso contrário ela chama o método create da classe Disciplina Model
+            if (this.cod > 0) {
+                disciplina.setCod(this.cod);
+                if (disciplinaModel.update(disciplina)) {
+                    this.closeJframe();
+                }
+            } else if (disciplinaModel.create(disciplina)) {
+                this.closeJframe();
+            }
+
+        } else {
+            //Informa uma mensagem caso usuário não tenha preenchido todos os campos;
+            JOptionPane.showMessageDialog(rootPane, "Não é possível efetivar o cadastro ou alteração se não houve preenchido todos os campos!");
+        }
+    }
+    
+    //OBJETIVO: Este método instancia novamente a view  ViewPrincipal, seta sua visualização  e fecha a view ViewFormDisciplinar;
+    public void closeJframe() {
+        ViewPrincipal viewPrincipal = new ViewPrincipal();
+        viewPrincipal.setVisible(true);
+        this.dispose();
     }
 
     /**
@@ -27,9 +82,9 @@ public class ViewCadastrar extends javax.swing.JFrame {
         jTextCH = new javax.swing.JTextField();
         jTextCurso = new javax.swing.JTextField();
         jTextVagas = new javax.swing.JTextField();
-        jComboVaga = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jComboPeriodo = new javax.swing.JComboBox<>();
+        jButtonSalvar = new javax.swing.JButton();
+        jButtonCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Cadastro Disciplinar");
@@ -41,7 +96,7 @@ public class ViewCadastrar extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Cadastro Disciplinar");
+        jLabel1.setText("Disciplina");
         jLabel1.setToolTipText("");
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jLabel1.setVerifyInputWhenFocusTarget(false);
@@ -62,35 +117,39 @@ public class ViewCadastrar extends javax.swing.JFrame {
         jLabel6.setText("Período:");
 
         jTextNome.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jTextNome.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jTextCH.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jTextCH.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jTextCurso.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jTextCurso.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jTextVagas.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jTextVagas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jComboVaga.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jComboVaga.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Matutino", "Vespertino", "Noturno" }));
+        jComboPeriodo.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jComboPeriodo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Matutino", "Vespertino", "Noturno" }));
 
-        jButton1.setBackground(new java.awt.Color(0, 153, 102));
-        jButton1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Cadastrar");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSalvar.setBackground(new java.awt.Color(0, 153, 102));
+        jButtonSalvar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jButtonSalvar.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonSalvar.setText("Salvar");
+        jButtonSalvar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonSalvar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonSalvarActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(204, 0, 0));
-        jButton2.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Cancelar");
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCancelar.setBackground(new java.awt.Color(204, 0, 0));
+        jButtonCancelar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jButtonCancelar.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonCancelar.setText("Cancelar");
+        jButtonCancelar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButtonCancelarActionPerformed(evt);
             }
         });
 
@@ -114,20 +173,20 @@ public class ViewCadastrar extends javax.swing.JFrame {
                             .addComponent(jLabel5)
                             .addComponent(jLabel6))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jComboVaga, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboPeriodo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(jButtonSalvar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)))
+                        .addComponent(jButtonCancelar)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextNome, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -146,11 +205,11 @@ public class ViewCadastrar extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboVaga, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jComboPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButtonSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -170,16 +229,14 @@ public class ViewCadastrar extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        ViewPrincipal viewPrincipal = new ViewPrincipal();
-        viewPrincipal.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
-    }//GEN-LAST:event_jButton1ActionPerformed
+    //objetivo: quando clicar no botao cancerlar ele chame método closejFrame();
+    private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
+        this.closeJframe();
+    }//GEN-LAST:event_jButtonCancelarActionPerformed
+    //objetivo: quando clicar no botao salvar ele chame método salvar();
+    private void jButtonSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSalvarActionPerformed
+        this.salvar();
+    }//GEN-LAST:event_jButtonSalvarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,28 +255,29 @@ public class ViewCadastrar extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ViewCadastrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ViewFormDisciplina.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ViewCadastrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ViewFormDisciplina.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ViewCadastrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ViewFormDisciplina.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ViewCadastrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ViewFormDisciplina.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ViewCadastrar().setVisible(true);
+                new ViewFormDisciplina().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboVaga;
+    private javax.swing.JButton jButtonCancelar;
+    private javax.swing.JButton jButtonSalvar;
+    private javax.swing.JComboBox<String> jComboPeriodo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
